@@ -1,0 +1,121 @@
+{% extends "base.html" %} {% block title %}Journal{% endblock %} {% block
+content %}
+<h1 class="page-header">📝 Mental Health Journal</h1>
+
+<!-- Add New Entry Form -->
+<div class="card">
+  <h2 style="margin-bottom: 1.5rem; color: #667eea">✍️ Add New Entry</h2>
+  <form action="/add_entry" method="POST">
+    <div class="form-group">
+      <label for="date">Date:</label>
+      <input
+        type="date"
+        id="date"
+        name="date"
+        class="form-control"
+        value="{{ today }}"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="mood_rating">How are you feeling today? (1-10):</label>
+      <select id="mood_rating" name="mood_rating" class="form-control" required>
+        <option value="">Select your mood...</option>
+        <option value="1">1 - Very Poor 😢</option>
+        <option value="2">2 - Poor 😔</option>
+        <option value="3">3 - Below Average 😕</option>
+        <option value="4">4 - Neutral 😐</option>
+        <option value="5">5 - Okay 🙂</option>
+        <option value="6">6 - Good 😊</option>
+        <option value="7">7 - Very Good 😄</option>
+        <option value="8">8 - Great 😁</option>
+        <option value="9">9 - Excellent 🤩</option>
+        <option value="10">10 - Amazing 🥳</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="content">What's on your mind today?</label>
+      <textarea
+        id="content"
+        name="content"
+        class="form-control"
+        rows="6"
+        placeholder="Write about your thoughts, feelings, experiences, or anything you'd like to reflect on..."
+        required
+      ></textarea>
+    </div>
+
+    <button type="submit" class="btn">Save Entry</button>
+  </form>
+</div>
+
+<!-- Journal Entries -->
+<div class="card">
+  <h2 style="margin-bottom: 1.5rem; color: #667eea">📚 Your Journal Entries</h2>
+
+  <!-- Undo Button -->
+  <div style="margin-bottom: 1rem">
+    {% if session.get('undo_entry_count', 0) > 0 %}
+    <form action="/undo_entry" method="POST" style="display: inline">
+      <button
+        type="submit"
+        class="btn"
+        style="background: #28a745; padding: 0.5rem 1rem; font-size: 0.875rem"
+      >
+        ↶ Undo Last Deletion
+      </button>
+    </form>
+    {% else %}
+    <span style="color: #888; font-size: 0.95rem">Nothing to undo.</span>
+    {% endif %}
+  </div>
+
+  {% if entries %} {% for entry in entries %}
+  <div class="entry-item">
+    <div class="entry-date">{{ entry[1] }}</div>
+    <div class="entry-content">{{ entry[3] }}</div>
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+      "
+    >
+      <span class="mood-badge">
+        {% if entry[2] >= 8 %}😊{% elif entry[2] >= 6 %}🙂{% elif entry[2] >= 4
+        %}😐{% elif entry[2] >= 2 %}😔{% else %}😢{% endif %} Mood: {{ entry[2]
+        }}/10
+      </span>
+      <form
+        action="/delete_entry/{{ entry[0] }}"
+        method="POST"
+        style="display: inline"
+        onsubmit="return confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')"
+      >
+        <button
+          type="submit"
+          class="btn"
+          style="background: #dc3545; padding: 0.5rem 1rem; font-size: 0.875rem"
+        >
+          🗑️ Delete
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endfor %} {% else %}
+  <p style="color: #666; font-style: italic; text-align: center; padding: 2rem">
+    No journal entries yet. Start writing to track your mental health journey!
+  </p>
+  {% endif %}
+</div>
+
+<script>
+  // Set today's date as default
+  document.getElementById("date").value = new Date()
+    .toISOString()
+    .split("T")[0];
+</script>
+{% endblock %}

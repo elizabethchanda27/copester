@@ -1,0 +1,118 @@
+{% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
+content %}
+<h1 class="page-header">Welcome to Your Mental Health Dashboard 🪼</h1>
+
+<!-- Stats Overview -->
+<div class="card">
+  <h2 style="margin-bottom: 1.5rem; color: #667eea">📊 Your Overview</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ total_entries }}</div>
+      <div class="stat-label">Journal Entries</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ total_mechanisms }}</div>
+      <div class="stat-label">Coping Mechanisms</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ avg_mood }}</div>
+      <div class="stat-label">Avg Mood Rating</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ avg_effectiveness }}</div>
+      <div class="stat-label">Avg Effectiveness</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+  <h2 style="margin-bottom: 1.5rem; color: #667eea">⚡ Quick Actions</h2>
+  <div
+    style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    "
+  >
+    <a href="/journal" class="btn" style="text-align: center; padding: 2rem">
+      <div style="font-size: 2rem; margin-bottom: 0.5rem">📝</div>
+      <div>Add Journal Entry</div>
+    </a>
+    <a
+      href="/coping-mechanisms"
+      class="btn"
+      style="text-align: center; padding: 2rem"
+    >
+      <div style="font-size: 2rem; margin-bottom: 0.5rem">🎯</div>
+      <div>Track Coping Mechanism</div>
+    </a>
+  </div>
+</div>
+
+<!-- Recent Activity -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+  "
+>
+  <!-- Recent Journal Entries -->
+  <div class="card">
+    <h3 style="margin-bottom: 1.5rem; color: #667eea">
+      📝 Recent Journal Entries
+    </h3>
+    {% if recent_entries %} {% for entry in recent_entries %}
+    <div class="entry-item">
+      <div class="entry-date">{{ entry[1] }}</div>
+      <div class="entry-content">
+        {{ entry[3][:100] }}{% if entry[3]|length > 100 %}...{% endif %}
+      </div>
+      <span class="mood-badge">
+        {% if entry[2] >= 8 %}😊{% elif entry[2] >= 6 %}🙂{% elif entry[2] >= 4
+        %}😐{% elif entry[2] >= 2 %}😔{% else %}😢{% endif %} Mood: {{ entry[2]
+        }}/10
+      </span>
+    </div>
+    {% endfor %} {% else %}
+    <p
+      style="color: #666; font-style: italic; text-align: center; padding: 2rem"
+    >
+      No journal entries yet. Start your mental health journey!
+    </p>
+    {% endif %}
+    <a href="/journal" class="btn" style="margin-top: 1rem">View All Entries</a>
+  </div>
+
+  <!-- Recent Coping Mechanisms -->
+  <div class="card">
+    <h3 style="margin-bottom: 1.5rem; color: #667eea">
+      🎯 Recent Coping Mechanisms
+    </h3>
+    {% if recent_mechanisms %} {% for mechanism in recent_mechanisms %}
+    <div class="mechanism-item">
+      <div class="mechanism-date">{{ mechanism[1] }}</div>
+      <div class="mechanism-name">{{ mechanism[2] }}</div>
+      {% if mechanism[4] %}
+      <div style="color: #666; font-style: italic; margin-bottom: 0.5rem">
+        "{{ mechanism[4] }}"
+      </div>
+      {% endif %}
+      <span class="effectiveness-badge">
+        ⭐ Effectiveness: {{ mechanism[3] }}/10
+      </span>
+    </div>
+    {% endfor %} {% else %}
+    <p
+      style="color: #666; font-style: italic; text-align: center; padding: 2rem"
+    >
+      No coping mechanisms tracked yet. Start tracking your strategies!
+    </p>
+    {% endif %}
+    <a href="/coping-mechanisms" class="btn" style="margin-top: 1rem"
+      >View All Mechanisms</a
+    >
+  </div>
+</div>
+{% endblock %}
